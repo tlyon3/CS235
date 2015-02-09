@@ -26,3 +26,13 @@
 *.exe
 *.out
 *.app
+
+*.zip
+*.DS_Store
+
+*.sublime-project
+*.sublime-workspace
+
+
+*main
+notes*/
