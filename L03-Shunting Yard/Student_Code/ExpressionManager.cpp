@@ -1,8 +1,14 @@
 #include "ExpressionManager.h"
+#include <iostream>
+using namespace std;
 
 bool ExpressionManager::isBalanced(string expression)
 {
-
+	string::iterator siterator;
+	for(siterator=expression.begin();siterator<expression.end();siterator++)
+	{
+		
+	}
 }
 
 string ExpressionManager::postfixToInfix(string postfixExpression)
