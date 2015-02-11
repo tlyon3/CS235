@@ -7,7 +7,7 @@ bool ExpressionManager::isBalanced(string expression)
 	string::iterator siterator;
 	for(siterator=expression.begin();siterator<expression.end();siterator++)
 	{
-		
+		ascii('(')
 	}
 }
 
