@@ -1,4 +1,5 @@
 #include "Factory.h"
+#include "ExpressionManager.cpp"
 //You may add #include statments here
 using namespace std;
 
@@ -14,6 +15,12 @@ using namespace std;
 
 	Example: If you made a class called "ExpressionManager", you might say, "return new ExpressionManager();".
 */
+int main()
+{
+	ExpressionManager exman;
+	cout<<"3+4*5"<<endl;
+	cout<<exman.infixToPostfix("3+4*5")<<endl;
+}
 ExpressionManagerInterface* Factory::createManager()
 {
 	return NULL;//Modify this line

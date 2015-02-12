@@ -67,29 +67,35 @@ string ExpressionManager::infixToPostfix(string infixExpression)
 	//for operator: pop 2, push operator
 	stack<string> myStack;
 	istringstream ss(infixExpression);
+	stringstream postfix;
 	istream_iterator<string> begin(ss),end;
 	vector<string> tokens(begin,end);
 	for(int i=0;i<tokens.size();i++)
 	{
-		try
+		if(isBracket(tokens[i]))
 		{
-			stoi(tokens[i]);
 			myStack.push(tokens[i]);
 		}
-		catch(...)
+		else if(isOperator(tokens[i]))
 		{
-			if(isBracket(tokens[i]))
+			myStack.pop();
+			myStack.pop();
+			if(myStack.top()=="-"||"+")
 			{
-				myStack.push(tokens[i]);
+				if(tokens[i]=="*"||"/")
+				{
+					myStack.pop();
+					myStack.push(tokens[i]);
+				}
 			}
-			else if(isOperator(tokens[i]))
-			{
-				
-			}
+			else myStack.push(tokens[i]);
 		}
-
+		else myStack.push(tokens[i]);
 	}
-
+	while(!myStack.empty())
+	{
+		myStack.top()>>postfix;
+	}
 }
 
 string ExpressionManager::postfixEvaluate(string postfixExpression)
