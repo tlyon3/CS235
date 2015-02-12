@@ -2,12 +2,17 @@
 
 class ExpressionManager: public ExpressionManagerInterface
 {
-	ExpressionManager():ExpressionManagerInterface(){}
-	~ExpressionManager(){}
+private:
 	string postfixExpression;
 	string infixExpression;
+public:
+	ExpressionManager():ExpressionManagerInterface(){}
+	~ExpressionManager(){}
 	bool isBalanced(string expression);
 	string postfixToInfix(string postfixExpression);
 	string infixToPostfix(string infixExpression);
-	string postfixEvaluate(string postfixExpression);	
+	string postfixEvaluate(string postfixExpression);
+	bool isBracket(const string& expression);
+	bool isOperator(const string& expression);	
+	// void performOperation(const string& input, stack<int>& intstack);
 };
