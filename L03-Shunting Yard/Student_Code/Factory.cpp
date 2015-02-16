@@ -18,8 +18,9 @@ using namespace std;
 int main()
 {
 	ExpressionManager exman;
-	cout<<"3+4*5"<<endl;
-	cout<<exman.infixToPostfix("3+4*5")<<endl;
+	cout<<"3 + 4 * 5"<<endl;
+	cout<<exman.infixToPostfix("3 + 4 * 5")<<endl;
+	cout<<exman.infixToPostfix("( 3 + 10 ) * ( 7 + 4 ) / 5")<<endl;
 }
 ExpressionManagerInterface* Factory::createManager()
 {
