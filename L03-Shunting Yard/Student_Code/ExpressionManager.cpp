@@ -94,8 +94,10 @@ string ExpressionManager::infixToPostfix(string infixExpression)
 	}
 	while(!myStack.empty())
 	{
-		myStack.top()>>postfix;
+		postfix<<myStack.top();
+		myStack.pop();
 	}
+	return postfix;
 }
 
 string ExpressionManager::postfixEvaluate(string postfixExpression)
