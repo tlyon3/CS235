@@ -101,17 +101,19 @@ string ExpressionManager::infixToPostfix(string infixExpression)
 	for(int i=0;i<tokens.size();i++)
 	{
 		const string token=tokens[i];
-		if(isOperator(token))
+		if(isOperator(token))			//if token is an operator
 		{
 			const string o1=token;
-			const string o2=myStack.top();
-			while(isOperator(o2) && ((isAssociative(o1,0) && priority(o1,o2))
-				|| (priority(o1,o2)<0)))
+			string o2=myStack.top();	
+			while(isOperator(o2) && 		//while there is an operator at the top
+				((isAssociative(o1,0) && priority(o1,o2)<=0)//left-associtive and prec of o1<=o2
+				|| (isAssociative(o1,1) && priority(o1,o2)<0)))//right_associative and prec of o1<o2
 			{
-				output.push_back(myStack.top());
+				output.push_back(myStack.top());	//output to queue
 				myStack.pop();
+				o2=myStack.top();		//set to next token
 			}
-			myStack.push(o1);
+			myStack.push(o1);			//push o1 on stack
 		}
 		if(token=="(")
 		{
@@ -119,14 +121,14 @@ string ExpressionManager::infixToPostfix(string infixExpression)
 		}
 		else if(token==")")
 		{
-			while(token!="(")				//pop everything until lbracket
+			while(token!="(")				//pop everything until left-bracket
 			{
-				output.push_back(myStack.top());
+				output.push_back(myStack.top()); //output token to queue
 				myStack.pop();
 			}
 			if(!myStack.empty())
 			{
-				myStack.pop();				//pop left bracket
+				myStack.pop();				//pop left bracket, don't output
 			}
 			else if(myStack.empty())
 			{
@@ -135,12 +137,12 @@ string ExpressionManager::infixToPostfix(string infixExpression)
 			}
 
 		}
-		else output.push_back(token);
+		else output.push_back(token);		//token is a number
 	}
 
-	while(!myStack.empty())
+	while(!myStack.empty())					//pop and output rest of tokens
 	{
-		if(isBracket(myStack.top()))
+		if(isBracket(myStack.top()))		//there shouldn't be any brackets left
 		{
 			cout<<"mismatched brackets"<<endl;
 			//throw exception "mismatched brackets"
@@ -153,7 +155,7 @@ string ExpressionManager::infixToPostfix(string infixExpression)
 	}
 
 	string postfix;
-	for(int i=0;i<output.size();i++)
+	for(int i=0;i<output.size();i++)//convert to string
 	{
 		postfix+=output[i];
 		postfix+=" ";
@@ -166,99 +168,6 @@ string ExpressionManager::postfixToInfix(string postfixExpression)
 {
 
 }
-// string ExpressionManager::infixToPostfix(string infixExpression)
-// {
-// 	istringstream ss(infixExpression);
-// 	istream_iterator<string> begin(ss),end;
-// 	vector<string> tokens(begin,end);
-// 	stack<string> myStack;
-// 	vector<string> output;
-// 	for(int i=0;i<tokens.size();i++)
-// 	{
-// 		const string token=tokens[i];
-// 		cout<<"Token: "<<tokens[i]<<endl;
-
-// 		if(isOperator(token))
-// 		{
-// 			const string op1=token;
-// 			if(!myStack.empty())
-// 			{
-// 				string op2=myStack.top();
-// 				while(isOperator(op2) && 
-// 					((isAssociative(op1, 0) && priority(op1,op2) == 0) ||
-// 					(priority(op1,op2)<0)))
-// 				{
-// 					myStack.pop();
-// 					output.push_back(op2);
-// 					if(!myStack.empty())
-// 					{
-// 						op2=myStack.top();
-// 					}
-// 					else
-// 						break;
-// 				}
-				
-// 			}
-// 			myStack.push(op1);
-// 		}
-// 		else if(token == "("||"{"||"[")
-// 		{
-// 			myStack.push(token);
-// 		}
-// 		else if(token==")")
-// 		{
-// 			string topToken = myStack.top();
-// 			while(topToken!="(")
-// 			{
-// 				output.push_back(topToken);
-// 				myStack.pop();
-// 				if(myStack.empty()) break;
-// 				topToken=myStack.top();
-// 			}
-// 			if(!myStack.empty()) myStack.pop();
-// 		}
-// 		else if(token=="}")
-// 		{
-// 			string topToken = myStack.top();
-// 			while(topToken!="{")
-// 			{
-// 				output.push_back(topToken);
-// 				myStack.pop();
-// 				if(myStack.empty()) break;
-// 				topToken=myStack.top();
-// 			}
-// 			if(!myStack.empty()) myStack.pop();
-// 		}
-// 		else if(token=="]")
-// 		{
-// 			string topToken = myStack.top();
-// 			while(topToken!="{")
-// 			{
-// 				output.push_back(topToken);
-// 				myStack.pop();
-// 				if(myStack.empty()) break;
-// 				topToken=myStack.top();
-// 			}
-// 			if(!myStack.empty()) myStack.pop();
-// 		}
-// 		else output.push_back(token);
-// 	}
-// 	while(!myStack.empty())
-// 	{
-// 		const string stackToken=myStack.top();
-// 		output.push_back(stackToken);
-// 		myStack.pop();
-// 	}
-// 	string postfix;
-// 	for(int j=0;j<output.size();j++)
-// 	{
-// 		postfix+=output[j];
-// 		postfix+=" ";
-// 	}
-// 	return postfix;
-	
-// }
-
 
 string ExpressionManager::postfixEvaluate(string postfixExpression)
 {
