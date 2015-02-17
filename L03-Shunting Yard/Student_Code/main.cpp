@@ -1,8 +1,11 @@
 #include "ExpressionManager.cpp"
-#include "ExpressionManager.h"
 
 int main()
 {
-	ExpressionManager exmang;
-	exmang.isBalanced("Hello World");
+	ExpressionManager exman;
+	cout<<"3 + 4 * 5"<<endl;
+	cout<<exman.infixToPostfix("3 + 4 * 5")<<endl;
+	cout<<exman.infixToPostfix("10 + 7 + 8")<<endl;
+	cout<<exman.infixToPostfix("( 3 + 10 ) * 7 + 4 / 5")<<endl;
+	cout<<exman.infixToPostfix("( 1 + 2 ) * ( 3 / 4 ) - ( 5 + 6 )");
 }

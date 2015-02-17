@@ -1,4 +1,9 @@
 #include "ExpressionManagerInterface.h"
+#include <map>
+#include <vector>
+#include <string>
+#include <iterator>
+#include <stdlib.h>
 
 class ExpressionManager: public ExpressionManagerInterface
 {
@@ -14,5 +19,7 @@ public:
 	string postfixEvaluate(string postfixExpression);
 	bool isBracket(const string& expression);
 	bool isOperator(const string& expression);	
+	
+
 	// void performOperation(const string& input, stack<int>& intstack);
 };

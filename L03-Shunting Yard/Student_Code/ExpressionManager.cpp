@@ -3,23 +3,30 @@
 #include <vector>
 #include <locale>
 #include <cctype>
-
+#include <list>
+typedef map<string,pair<int,int> > OpMap;
+typedef vector<string>::const_iterator cv_iter;
+typedef	string::iterator s_iter;
 using namespace std;
 
 //infix: 3 * 4 + 5
 //postfix: 3 4 * 5 +
 //http://en.wikipedia.org/wiki/Shunting_yard_algorithm
-int priority(const string& c)
+const OpMap::value_type assocs[4]=
+	{
+		OpMap::value_type("+",make_pair<int,int>(0, 0)),
+		OpMap::value_type("-",make_pair<int,int>(0,0)),
+		OpMap::value_type("*",make_pair<int,int>(5,0)),
+		OpMap::value_type("/",make_pair<int,int>(5,0))
+	};
+const OpMap opmap(assocs, assocs + sizeof(assocs) / sizeof(assocs[0]));
+
+int priority(const string& token1, const string& token2)
 {
-	if(c=="*"||"/")
-	{
-		return 2;
-	}
-	if(c=="+"||"-")
-	{
-		return 1;
-	}
-	else return 0;
+	const pair<int,int> p1 =opmap.find(token1)->second;
+	const pair<int,int> p2 = opmap.find(token2)->second;
+
+	return p1.first - p2.first;
 }
 bool tryParse(const string &symbol)
 {
@@ -79,88 +86,178 @@ bool ExpressionManager::isBalanced(string expression)
 	else return false;
 
 }
+bool isAssociative(const string& token, const int& type)
+{
+	const pair<int,int> p=opmap.find(token)->second;
+	return p.second == type;
+}
+string ExpressionManager::infixToPostfix(string infixExpression)
+{
+ 	istringstream ss(infixExpression);
+ 	istream_iterator<string> begin(ss),end;
+	vector<string> tokens(begin,end);
+	stack<string> myStack;
+	vector<string> output;
+	for(int i=0;i<tokens.size();i++)
+	{
+		const string token=tokens[i];
+		if(isOperator(token))
+		{
+			const string o1=token;
+			const string o2=myStack.top();
+			while(isOperator(o2) && ((isAssociative(o1,0) && priority(o1,o2))
+				|| (priority(o1,o2)<0)))
+			{
+				output.push_back(myStack.top());
+				myStack.pop();
+			}
+			myStack.push(o1);
+		}
+		if(token=="(")
+		{
+			myStack.push(token);
+		}
+		else if(token==")")
+		{
+			while(token!="(")				//pop everything until lbracket
+			{
+				output.push_back(myStack.top());
+				myStack.pop();
+			}
+			if(!myStack.empty())
+			{
+				myStack.pop();				//pop left bracket
+			}
+			else if(myStack.empty())
+			{
+				cout<<"mismatched brackets"<<endl;
+				//throw execption "mismatched brackets"
+			}
+
+		}
+		else output.push_back(token);
+	}
+
+	while(!myStack.empty())
+	{
+		if(isBracket(myStack.top()))
+		{
+			cout<<"mismatched brackets"<<endl;
+			//throw exception "mismatched brackets"
+		}
+		else
+		{
+			output.push_back(myStack.top());
+			myStack.pop();
+		} 
+	}
+
+	string postfix;
+	for(int i=0;i<output.size();i++)
+	{
+		postfix+=output[i];
+		postfix+=" ";
+	}
+	return postfix;
+}
+
 
 string ExpressionManager::postfixToInfix(string postfixExpression)
 {
 
 }
+// string ExpressionManager::infixToPostfix(string infixExpression)
+// {
+// 	istringstream ss(infixExpression);
+// 	istream_iterator<string> begin(ss),end;
+// 	vector<string> tokens(begin,end);
+// 	stack<string> myStack;
+// 	vector<string> output;
+// 	for(int i=0;i<tokens.size();i++)
+// 	{
+// 		const string token=tokens[i];
+// 		cout<<"Token: "<<tokens[i]<<endl;
 
-string ExpressionManager::infixToPostfix(string infixExpression)
-{
+// 		if(isOperator(token))
+// 		{
+// 			const string op1=token;
+// 			if(!myStack.empty())
+// 			{
+// 				string op2=myStack.top();
+// 				while(isOperator(op2) && 
+// 					((isAssociative(op1, 0) && priority(op1,op2) == 0) ||
+// 					(priority(op1,op2)<0)))
+// 				{
+// 					myStack.pop();
+// 					output.push_back(op2);
+// 					if(!myStack.empty())
+// 					{
+// 						op2=myStack.top();
+// 					}
+// 					else
+// 						break;
+// 				}
+				
+// 			}
+// 			myStack.push(op1);
+// 		}
+// 		else if(token == "("||"{"||"[")
+// 		{
+// 			myStack.push(token);
+// 		}
+// 		else if(token==")")
+// 		{
+// 			string topToken = myStack.top();
+// 			while(topToken!="(")
+// 			{
+// 				output.push_back(topToken);
+// 				myStack.pop();
+// 				if(myStack.empty()) break;
+// 				topToken=myStack.top();
+// 			}
+// 			if(!myStack.empty()) myStack.pop();
+// 		}
+// 		else if(token=="}")
+// 		{
+// 			string topToken = myStack.top();
+// 			while(topToken!="{")
+// 			{
+// 				output.push_back(topToken);
+// 				myStack.pop();
+// 				if(myStack.empty()) break;
+// 				topToken=myStack.top();
+// 			}
+// 			if(!myStack.empty()) myStack.pop();
+// 		}
+// 		else if(token=="]")
+// 		{
+// 			string topToken = myStack.top();
+// 			while(topToken!="{")
+// 			{
+// 				output.push_back(topToken);
+// 				myStack.pop();
+// 				if(myStack.empty()) break;
+// 				topToken=myStack.top();
+// 			}
+// 			if(!myStack.empty()) myStack.pop();
+// 		}
+// 		else output.push_back(token);
+// 	}
+// 	while(!myStack.empty())
+// 	{
+// 		const string stackToken=myStack.top();
+// 		output.push_back(stackToken);
+// 		myStack.pop();
+// 	}
+// 	string postfix;
+// 	for(int j=0;j<output.size();j++)
+// 	{
+// 		postfix+=output[j];
+// 		postfix+=" ";
+// 	}
+// 	return postfix;
 	
-	stringstream postfix;
-	vector<string> tokens;
-	istringstream iss(infixExpression);
-	while(iss)
-	{
-		string temp;
-		iss>>temp;
-		tokens.push_back(temp);
-	}
-	stack<string> myStack;
-	vector<string> output;
-	for(int i=0;i<tokens.size();i++)
-	{
-		if(tryParse(tokens[i]))
-		{
-			output.push_back(tokens[i]);
-		}
-		if(tokens[i]=="(")
-		{
-			myStack.push(tokens[i]);
-		}
-		if(tokens[i]==")")
-		{
-			while(!myStack.empty() && myStack.top() != "(")
-			{
-				output.push_back(myStack.top());
-				myStack.pop();
-			}
-			myStack.pop();
-		}
-		if(tokens[i]=="}")
-		{
-			while(!myStack.empty() && myStack.top() != "{")
-			{
-				output.push_back(myStack.top());
-				myStack.pop();
-			}
-			myStack.pop();
-		}
-		if(tokens[i]=="]")
-		{
-			while(!myStack.empty() && myStack.top() != "[")
-			{
-				output.push_back(myStack.top());
-				myStack.pop();
-			}
-			myStack.pop();
-		}
-		if(isOperator(tokens[i]))
-		{
-			while(!myStack.empty() && priority(myStack.top()) >= priority(tokens[i]))
-			{
-				output.push_back(myStack.top());
-				myStack.pop();
-			}
-			myStack.push(tokens[i]);
-		}
-
-	}
-	while(!myStack.empty())
-	{
-		output.push_back(myStack.top());
-		myStack.pop();
-	}
-	cout<<"Contents of output vector: ";
-	for(int i=0;i<output.size();i++)
-	{
-		postfix<<output[i];
-		postfix<<" ";
-	}
-	string out=postfix.str();
-	return out;
-}
+// }
 
 
 string ExpressionManager::postfixEvaluate(string postfixExpression)
@@ -168,29 +265,14 @@ string ExpressionManager::postfixEvaluate(string postfixExpression)
 
 }
 
-bool ExpressionManager::isBracket(const string& expression)
+bool ExpressionManager::isBracket(const string& token)
 {
-	string brackets[]={"{","(","["};
-	for(int i=0; i<6;i++)
-	{
-		if(expression==brackets[i])
-		{
-			return true;
-		}
-	}
-	return false;
+	return token=="("||token=="{"||token=="["||
+		token==")"||token=="}"||token=="]";
 }
-bool ExpressionManager::isOperator(const string& expression)
+bool ExpressionManager::isOperator(const string& token)
 {
-	string operators[]={"+","-","*","/"};
-	for(int i=0;i<4;i++)
-	{
-		if(expression==operators[i])
-		{
-			return true;
-		}
-	}
-	return false;
+	return token=="+"||token=="-"||token=="*"||token=="/";
 }
 
 // void ExpressionManager::performOperation(const string& input, stack<int>& intstack)
