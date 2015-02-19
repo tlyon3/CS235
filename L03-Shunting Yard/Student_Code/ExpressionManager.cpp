@@ -5,11 +5,13 @@
 #include <locale>
 #include <cctype>
 #include <list>
+#include <algorithm>
+#include <iterator>
 typedef map<string,pair<int,int> > OpMap;
 typedef vector<string>::const_iterator cv_iter;
 typedef	string::iterator s_iter;
 using namespace std;
-
+ExpressionManager::~ExpressionManager(){}
 //infix: 3 * 4 + 5
 //postfix: 3 4 * 5 +
 //http://en.wikipedia.org/wiki/Shunting_yard_algorithm
@@ -90,49 +92,55 @@ bool isAssociative(const string& token, const int& type)
 
 string ExpressionManager::infixToPostfix(string infixExpression)
 {
+	if(!validInfix(infixExpression))
+	{
+		return "NOT VALID EXPRESSION";
+		//throw exception
+	}
  	istringstream ss(infixExpression);
  	istream_iterator<string> begin(ss),end;
 	vector<string> tokens(begin,end);
 	stack<string> myStack;
 	vector<string> output;
-	cout<<"size: "<<tokens.size()<<endl;
+	//cout<<"size: "<<tokens.size()<<endl;
 	for(int i=0;i<tokens.size();i++)
 	{
-		cout<<"-----i: "<<i<<endl;
-		cout<<"Stack: ";
-		for(stack<string> dump=myStack;!dump.empty();dump.pop())
-		{
-			cout<<dump.top()<<" ";
-		}
-		cout<<endl<<"Output Queue: ";
-		for(int i=0;i<output.size();i++)
-		{
-			cout<<output[i]<< " ";
-		}
-		cout<<endl;
-		cout<<"Token: "<<tokens[i]<<endl;
+		
+		//cout<<"-----i: "<<i<<endl;
+		//cout<<"Stack: ";
+		// for(stack<string> dump=myStack;!dump.empty();dump.pop())
+		// {
+		// 	cout<<dump.top()<<" ";
+		// }
+		//cout<<endl<<"Output Queue: ";
+		// for(int i=0;i<output.size();i++)
+		// {
+		// 	cout<<output[i]<< " ";
+		// }
+		// cout<<endl;
+		// cout<<"Token: "<<tokens[i]<<endl;
 		string token=tokens[i];
 		if(isOperator(token))			//if token is an operator
 		{
-			cout<<token<<" ";
-			cout<<"operator"<<endl;
+			// cout<<token<<" ";
+			// cout<<"operator"<<endl;
 			const string o1=token;
 			if(myStack.empty())
 			{
-				cout<<o1<<" ";
-				cout<<"Push op"<<endl;
+				// cout<<o1<<" ";
+				// cout<<"Push op"<<endl;
 				myStack.push(o1);
 			}
 			else 
 			{
 				string o2=myStack.top();
-				cout<<o2<<" ";
-				cout<<"o2 string"<<endl;	
+				// cout<<o2<<" ";
+				// cout<<"o2 string"<<endl;	
 				while(isOperator(o2) && 		//while there is an operator at the top
 					((isAssociative(o1,0) && priority(o1,o2)<=0)//left-associtive and prec of o1<=o2
 					|| (isAssociative(o1,1) && priority(o1,o2)<0)))//right_associative and prec of o1<o2
 				{
-					cout<<"while operator"<<endl;
+					// cout<<"while operator"<<endl;
 					output.push_back(myStack.top());	//output to queue
 					myStack.pop();
 					if(!myStack.empty())
@@ -141,24 +149,24 @@ string ExpressionManager::infixToPostfix(string infixExpression)
 					}
 					else break;
 				}
-				cout<<o1<<" ";
-				cout<<"Push op"<<endl;
+				// cout<<o1<<" ";
+				// cout<<"Push op"<<endl;
 				myStack.push(o1);			//push o1 on stack
 			}
 			
 		}
 		else if(token=="(")
 		{
-			cout<<"bracket"<<endl;
+			// cout<<"bracket"<<endl;
 			myStack.push(token);
 		}
 		else if(token==")")
 		{
-			cout<< "right bracket"<<endl;
+			// cout<< "right bracket"<<endl;
 			while(myStack.top()!="(")				//pop everything until left-bracket
 			{
 				output.push_back(myStack.top()); //output token to queue
-				cout<<"output: "<<myStack.top()<<endl;
+				// cout<<"output: "<<myStack.top()<<endl;
 				myStack.pop();
 			}
 			if(!myStack.empty())
@@ -174,16 +182,16 @@ string ExpressionManager::infixToPostfix(string infixExpression)
 		}
 		else if(token=="{")
 		{
-			cout<<"bracket"<<endl;
+			// cout<<"bracket"<<endl;
 			myStack.push(token);
 		}
 		else if(token=="}")
 		{
-			cout<< "right bracket"<<endl;
+			// cout<< "right bracket"<<endl;
 			while(myStack.top()!="{")				//pop everything until left-bracket
 			{
 				output.push_back(myStack.top()); //output token to queue
-				cout<<"output: "<<myStack.top()<<endl;
+				// cout<<"output: "<<myStack.top()<<endl;
 				myStack.pop();
 			}
 			if(!myStack.empty())
@@ -199,16 +207,16 @@ string ExpressionManager::infixToPostfix(string infixExpression)
 		}
 		else if(token=="[")
 		{
-			cout<<"bracket"<<endl;
+			// cout<<"bracket"<<endl;
 			myStack.push(token);
 		}
 		else if(token=="]")
 		{
-			cout<< "right bracket"<<endl;
+			// cout<< "right bracket"<<endl;
 			while(myStack.top()!="[")				//pop everything until left-bracket
 			{
 				output.push_back(myStack.top()); //output token to queue
-				cout<<"output: "<<myStack.top()<<endl;
+				// cout<<"output: "<<myStack.top()<<endl;
 				myStack.pop();
 			}
 			if(!myStack.empty())
@@ -225,8 +233,8 @@ string ExpressionManager::infixToPostfix(string infixExpression)
 		else
 		{
 			output.push_back(token);
-			cout<<token<<" ";
-			cout<<"push number"<<endl;		//token is a number
+			// cout<<token<<" ";
+			// cout<<"push number"<<endl;		//token is a number
 		}		
 	}
 
@@ -271,16 +279,16 @@ string ExpressionManager::postfixToInfix(string postfixExpression)
 	string result;
 	for(int i=0;i<tokens.size();i++)//3 4 * 5 +
 	{
-		cout<<"Stack: ";
-		for(stack<string> dump=myStack;!dump.empty();dump.pop())
-		{
-			cout<<dump.top();
-			cout<<", ";
-		}
-		cout<<endl;
+		// cout<<"Stack: ";
+		// for(stack<string> dump=myStack;!dump.empty();dump.pop())
+		// {
+		// 	cout<<dump.top();
+		// 	cout<<", ";
+		// }
+		// cout<<endl;
 		if(isOperator(tokens[i]))
 		{
-			cout<<tokens[i]<<" operator"<<endl;
+			// cout<<tokens[i]<<" operator"<<endl;
 			if(stackSize(myStack)<2)
 			{
 				cout<<"error"<<endl;
@@ -310,6 +318,10 @@ string ExpressionManager::postfixToInfix(string postfixExpression)
 
 string ExpressionManager::postfixEvaluate(string postfixExpression)
 {
+	if(!validPostfix(postfixExpression))
+	{
+		return "NOT VALID EXPRESSION";
+	}
 	int lArg;
 	int rArg;
 	int iresult;
@@ -340,6 +352,11 @@ string ExpressionManager::postfixEvaluate(string postfixExpression)
 			}
 			else if(tokens[i]=="/")
 			{
+				if(rArg==0)
+				{
+					return "CAN'T DIVIDE BY ZERO";
+					//throw exception
+				}
 				iresult = lArg/rArg;
 			}
 			else if(tokens[i]=="%")
@@ -364,34 +381,57 @@ bool ExpressionManager::isOperator(const string& token)
 	return token=="+"||token=="-"||token=="*"||token=="/";
 }
 
-// void ExpressionManager::performOperation(const string& input, stack<int>& intstack)
-// {
-// 	int lVal, rVal, result;
-// 	rVal = intstack.top();
-// 	intstack.pop();
+bool ExpressionManager::validInfix(string infixexpression)
+{
+	string validEntries[]={"1","2","3","4","5","6","7","8","9","0"
+							"(",")","{","}","[","]","+","-","*","/","%"};
+	bool found=false;
+	stringstream ss(infixexpression);
+ 	istream_iterator<string> begin(ss),end;
+	vector<string> tokens(begin,end);
+	for(int i=0;i<tokens.size();i++)
+	{
+		// if(isOperator(tokens[i]))//format is correct?
+		// {
+		// 	if(!isdigit(atoi(tokens[i].c_str())))
+		// 	{
+		// 		return false;
+		// 	}
+		// }
+		for(int j=0;j<20;j++)	//all tokens are valid?
+		{
+			if(tokens[i]==validEntries[j])
+			{
+				found=true;
+				break;
+			}
+			else found=false;
+		}
 
-// 	lVal=intstack.top();
-// 	intstack.pop();
-// 	if(input=="-")
-// 	{
-// 		result=lVal-rVal;
-// 	}
-// 	else if(input=="+")
-// 	{
-// 		result=lVal+rVal;
-// 	}
-// 	else if(input=="/")
-// 	{
-// 		result=lVal/rVal;
-// 	}
-// 	else if(input=="*")
-// 	{
-// 		result=lVal*rVal;
-// 	}
-// 	else
-// 	{
-// 		result=lVal%rVal;
-// 	}
-// 	myintStack.push(result);
-// }
+	}
+	return found;
+}
+bool ExpressionManager::validPostfix(string postfixExpression)
+{
+	string validEntries[]={"1","2","3","4","5","6","7","8","9","0"
+							"(",")","{","}","[","]","+","-","*","/","%"};
+	bool found=false;
+	stringstream ss(postfixExpression);
+ 	istream_iterator<string> begin(ss),end;
+	vector<string> tokens(begin,end);
+	
+	for(int i=0;i<tokens.size();i++)
+	{	
+		for(int j=0;j<20;j++)
+		{
+			if(tokens[i]==validEntries[j])
+			{
+				found=true;
+				break;
+			}
+			else found=false;
+		}
 
+	}
+	return found;
+}
