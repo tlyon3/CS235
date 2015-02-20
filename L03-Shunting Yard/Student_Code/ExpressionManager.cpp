@@ -15,6 +15,17 @@ ExpressionManager::~ExpressionManager(){}
 //infix: 3 * 4 + 5
 //postfix: 3 4 * 5 +
 //http://en.wikipedia.org/wiki/Shunting_yard_algorithm
+static inline std::string &rtrim(std::string &s) 
+{
+    s.erase(std::find_if(s.rbegin(), s.rend(), std::not1(std::ptr_fun<int, int>(std::isspace))).base(), s.end());
+    return s;
+}
+bool ExpressionManager::is_number(const std::string& s)
+{
+    std::string::const_iterator it = s.begin();
+    while (it != s.end() && std::isdigit(*it)) ++it;
+    return !s.empty() && it == s.end();
+}
 const OpMap::value_type assocs[5]=
 	{
 		OpMap::value_type("+",make_pair<int,int>(0, 0)),
@@ -92,10 +103,14 @@ bool isAssociative(const string& token, const int& type)
 
 string ExpressionManager::infixToPostfix(string infixExpression)
 {
-	if(!validInfix(infixExpression))
+	if(validInfix(infixExpression)==false)
 	{
-		return "NOT VALID EXPRESSION";
+		return "invalid";
 		//throw exception
+	}
+	if(!validAmount(infixExpression))
+	{
+		return "invalid";
 	}
  	istringstream ss(infixExpression);
  	istream_iterator<string> begin(ss),end;
@@ -175,7 +190,8 @@ string ExpressionManager::infixToPostfix(string infixExpression)
 			}
 			else if(myStack.empty())
 			{
-				cout<<"mismatched brackets"<<endl;
+				//cout<<"mismatched brackets"<<endl;
+				return "invalid";
 				//throw execption "mismatched brackets"
 			}
 
@@ -200,7 +216,7 @@ string ExpressionManager::infixToPostfix(string infixExpression)
 			}
 			else if(myStack.empty())
 			{
-				cout<<"mismatched brackets"<<endl;
+				return "invalid";
 				//throw execption "mismatched brackets"
 			}
 
@@ -225,7 +241,7 @@ string ExpressionManager::infixToPostfix(string infixExpression)
 			}
 			else if(myStack.empty())
 			{
-				cout<<"mismatched brackets"<<endl;
+				return "invalid";
 				//throw execption "mismatched brackets"
 			}
 
@@ -242,7 +258,7 @@ string ExpressionManager::infixToPostfix(string infixExpression)
 	{
 		if(isBracket(myStack.top()))		//there shouldn't be any brackets left
 		{
-			cout<<"mismatched brackets"<<endl;
+			return "invalid";
 			//throw exception "mismatched brackets"
 		}
 		else
@@ -258,6 +274,7 @@ string ExpressionManager::infixToPostfix(string infixExpression)
 		postfix+=output[i];
 		postfix+=" ";
 	}
+	postfix=rtrim(postfix);
 	return postfix;
 }
 
@@ -286,12 +303,16 @@ string ExpressionManager::postfixToInfix(string postfixExpression)
 		// 	cout<<", ";
 		// }
 		// cout<<endl;
+		if(!validAmount(postfixExpression))
+		{
+			return "invalid";
+		}
 		if(isOperator(tokens[i]))
 		{
 			// cout<<tokens[i]<<" operator"<<endl;
 			if(stackSize(myStack)<2)
 			{
-				cout<<"error"<<endl;
+				return "invalid";
 				//throw too few arguments
 			}
 			else 
@@ -320,7 +341,11 @@ string ExpressionManager::postfixEvaluate(string postfixExpression)
 {
 	if(!validPostfix(postfixExpression))
 	{
-		return "NOT VALID EXPRESSION";
+		return "invalid";
+	}
+	if(!validAmount(postfixExpression))
+	{
+		return "invalid";
 	}
 	int lArg;
 	int rArg;
@@ -330,14 +355,30 @@ string ExpressionManager::postfixEvaluate(string postfixExpression)
  	istream_iterator<string> begin(ss),end;
 	vector<string> tokens(begin,end);
 	stack<string> myStack;
+	if(tokens.size()==1&&is_number(tokens[0]))
+	{
+		return tokens[0];
+	}
+	if(!is_number(tokens[0]))
+	{
+		return "invalid";
+	}
+	if(!is_number(tokens[1]))
+	{
+		return "invalid";
+	}
 	for(int i=0;i<tokens.size();i++)
 	{
 		if(isOperator(tokens[i]))
 		{
-			rArg=stoi(myStack.top());
-			myStack.pop();
-			lArg=stoi(myStack.top());
-			myStack.pop();
+			if(myStack.size()>=2)
+			{
+				rArg=stoi(myStack.top());
+				myStack.pop();
+				lArg=stoi(myStack.top());
+				myStack.pop();
+			}
+			else return "invalid";
 			if(tokens[i]=="+")
 			{
 				iresult = lArg+rArg;
@@ -354,7 +395,7 @@ string ExpressionManager::postfixEvaluate(string postfixExpression)
 			{
 				if(rArg==0)
 				{
-					return "CAN'T DIVIDE BY ZERO";
+					return "invalid";
 					//throw exception
 				}
 				iresult = lArg/rArg;
@@ -378,43 +419,60 @@ bool ExpressionManager::isBracket(const string& token)
 }
 bool ExpressionManager::isOperator(const string& token)
 {
-	return token=="+"||token=="-"||token=="*"||token=="/";
+	return token=="+"||token=="-"||token=="*"||token=="/"||token=="%";
 }
-
+bool ExpressionManager::validAmount(string expression)
+{
+	stringstream ss(expression);
+ 	istream_iterator<string> begin(ss),end;
+	vector<string> tokens(begin,end);
+	int op=0;
+	int num=0;
+	for(int i=0;i<tokens.size();i++)
+	{
+		if(isOperator(tokens[i]))
+		{
+			op++;
+		}
+		else if(is_number(tokens[i]))
+		{
+			num++;
+		}
+	}
+	// cout<<"Operators: "<<op<<endl;
+	// cout<<"Numbers: "<<num<<endl;
+	if(op==(num-1))
+	{
+		return true;
+	}
+	else return false;
+}
 bool ExpressionManager::validInfix(string infixexpression)
 {
-	string validEntries[]={"1","2","3","4","5","6","7","8","9","0"
-							"(",")","{","}","[","]","+","-","*","/","%"};
+	if(isBalanced(infixexpression)==false)
+	{
+		return false;
+	}
+	//cout<<"check valid infix: "<<infixExpression<<endl;
+	//string validEntries[]={"1","2","3","4","5","6","7","8","9","0"
+							//"(",")","{","}","[","]","+","-","*","/","%"};
 	bool found=false;
 	stringstream ss(infixexpression);
  	istream_iterator<string> begin(ss),end;
 	vector<string> tokens(begin,end);
 	for(int i=0;i<tokens.size();i++)
 	{
-		// if(isOperator(tokens[i]))//format is correct?
-		// {
-		// 	if(!isdigit(atoi(tokens[i].c_str())))
-		// 	{
-		// 		return false;
-		// 	}
-		// }
-		for(int j=0;j<20;j++)	//all tokens are valid?
+		if(isOperator(tokens[i])||is_number(tokens[i])||isBracket(tokens[i]))
 		{
-			if(tokens[i]==validEntries[j])
-			{
-				found=true;
-				break;
-			}
-			else found=false;
+			found = true;
 		}
-
+		else return false;
 	}
-	return found;
+	//cout<<"valid"<<endl;
+	return true;
 }
 bool ExpressionManager::validPostfix(string postfixExpression)
 {
-	string validEntries[]={"1","2","3","4","5","6","7","8","9","0"
-							"(",")","{","}","[","]","+","-","*","/","%"};
 	bool found=false;
 	stringstream ss(postfixExpression);
  	istream_iterator<string> begin(ss),end;
@@ -422,15 +480,15 @@ bool ExpressionManager::validPostfix(string postfixExpression)
 	
 	for(int i=0;i<tokens.size();i++)
 	{	
-		for(int j=0;j<20;j++)
+		if(isBracket(postfixExpression))
 		{
-			if(tokens[i]==validEntries[j])
-			{
-				found=true;
-				break;
-			}
-			else found=false;
+			return false;
 		}
+		if(isOperator(tokens[i])||is_number(tokens[i]))
+		{
+			found = true;
+		}
+		else return false;
 
 	}
 	return found;

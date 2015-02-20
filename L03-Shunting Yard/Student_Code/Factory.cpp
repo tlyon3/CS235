@@ -1,5 +1,5 @@
 #include "Factory.h"
-#include "ExpressionManager.cpp"
+#include "ExpressionManager.h"
 //You may add #include statments here
 using namespace std;
 
@@ -20,13 +20,8 @@ using namespace std;
 // int main()
 // {
 // 	ExpressionManager exman;
-// 	string postfix=exman.infixToPostfix("( 3 + 10 ) / ( 2 + 3 ) * 4");
-// 	cout<<postfix<<endl;
-// 	string pfix=exman.infixToPostfix("( 3 + 10 ) / 0 + 5");
-// 	cout<<exman.postfixToInfix(postfix)<<endl;
-// 	cout<<exman.infixToPostfix("a b ! t")<<endl;
-// 	cout<<exman.postfixEvaluate(postfix)<<endl;
-// 	cout<<exman.postfixEvaluate("a b ! t")<<endl;
+// 	cout<<exman.validAmount("3 + 3 + 3")<<endl;
+// 	cout<<exman.validAmount("3 + 3 +")<<endl;
 
 // }
 ExpressionManagerInterface* Factory::createManager()
