@@ -20,6 +20,7 @@ bool Station::addToStation(int car)
 		stationDeque.doesExist(car)||
 		stationQueue.doesExist(car))
 	{
+		//std::cout<<car<<" already exists"<<std::endl;
 		return false;
 	}
 	if(car<=0)
@@ -41,8 +42,8 @@ bool Station::removeFromStation()
 {
 	if(currentCar!=-1)
 	{
-		std::cout<<"Removed '"<<currentCar
-		<<"' from station"<<std::endl;
+		// std::cout<<"Removed '"<<currentCar
+		// <<"' from station"<<std::endl;
 		currentCar=-1;
 		return true;
 	}

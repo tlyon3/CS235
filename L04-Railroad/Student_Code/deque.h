@@ -12,16 +12,16 @@ private:
 		Node* next;
 		Node* prev;
 	};
-	int count;
+	//int count;
 	Node* tail;
 	Node* head;
 public:
-	Deque():count(0),head(NULL),tail(NULL){}
+	Deque():head(NULL),tail(NULL){}
 
 	void print()
 	{
 		Node* n=head;
-		std::cout<<"Deque("<<count<<"): ";
+		std::cout<<"Deque("<<size()<<"): ";
 		while(n!=NULL)
 		{
 			std::cout<<n->item<<" ";
@@ -31,7 +31,18 @@ public:
 	}
 	int size()
 	{
-		return count;
+		int listcount=0;
+		Node* n=head;
+		if(head==NULL)
+		{
+			return 0;
+		}
+		while(n!=NULL)
+		{
+			listcount++;
+			n=n->next;
+		}
+		return listcount;
 	}
 	bool doesExist(ItemType item)
 	{
@@ -51,21 +62,21 @@ public:
 		if(!doesExist(item)&&item!=-1)
 		{
 			Node* n=new Node();
-			n->item=item;
 			if(head==NULL)
 			{
-				head=n;
 				tail=n;
 				n->next=NULL;
 			}
 			else
 			{
+				head->prev=n;
 				n->next=head;
-				head=n;
 			}
-			count++;
-			std::cout<<"Added '"<<item
-			<<"' to deque."<<std::endl;
+			n->item=item;
+			head=n;
+			n->prev=NULL;
+			// std::cout<<"Added '"<<item
+			// <<"' to deque."<<std::endl;
 			return true;
 		}
 		else return false;
@@ -78,44 +89,62 @@ public:
 			Node* n=new Node();
 			n->item = item;
 			if(tail==NULL)
+			{
 				head=n;
+				n->prev=NULL;
+			}
 			else
-				tail->next = n;
-			n->next = NULL;
-			n->prev=tail;
+			{
+				tail->next=n;
+				n->prev=tail;
+			}
+			n->next=NULL;
 			tail=n;
-			count++;
-			std::cout<<"Added '"<<item
-			<<"' to deque."<<std::endl;
+			// std::cout<<"Added '"<<item
+			// <<"' to deque."<<std::endl;
 			return true;
 		}
 		else return false;
 	}
 	ItemType removeLeft()
 	{
-		if(count>0)
+		if(size()>0)
 		{
 			Node* n=head;
 			ItemType item=n->item;
-			head=n->next;
-			head->prev=NULL;
+			if(size()==1)
+			{
+				head=NULL;
+				tail=NULL;
+			}
+			else
+			{
+				head->prev=NULL;
+				head=n->next;
+			}
 			delete n;
-			count--;
-			std::cout<<"Removed '"<<item
-			<<"' from deque"<<std::endl;
+			// std::cout<<"Removed '"<<item
+			// <<"' from deque"<<std::endl;
 			return n->item;
 		}
 		else return -1;
 	}
 	ItemType removeRight()
 	{
-		if(count>0)
+		if(size()>0)
 		{
 			Node* n=tail;
 			ItemType item=n->item;
 			tail=n->prev;
-			tail->next=NULL;
-			count--;
+			if(size()==1)
+			{
+				head=NULL;
+				tail=NULL;
+			}
+			else
+			{
+				tail->next=NULL;
+			}
 			delete n;
 			return item;
 		}

@@ -59,15 +59,18 @@ public:
 			if(tail==NULL)
 			{
 				head=n;
-				//n->prev=NULL;
+				n->prev=NULL;
 			}
 			else
+			{
 				tail->next=n;
+				n->prev=tail;
+			}
 			n->next=NULL;
 			tail=n;
 			//count++;
-			std::cout<<"Added '"<<item
-			<<"' to stack."<<std::endl;
+			// std::cout<<"Added '"<<item
+			// <<"' to stack."<<std::endl;
 			return true;
 		}
 		else return false;
@@ -79,13 +82,17 @@ public:
 		{
 			Node* n=tail;
 			ItemType item=n->item;
-			std::cout<<"segfault"<<endl;
 			tail=n->prev;
-			std::cout<<"segfault"<<endl;
-			tail->next=NULL;
+			if(size()==1)
+			{
+				head=NULL;
+				tail=NULL;
+			}
+			else
+				tail->next=NULL;
 			delete n;
-			std::cout<<"Removed '"<<item
-			<<"' from stack"<<std::endl;
+			// std::cout<<"Removed '"<<item
+			// <<"' from stack"<<std::endl;
 			return item;
 		}
 		else return -1;
