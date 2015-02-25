@@ -63,8 +63,8 @@ public:
 			n->next=NULL;
 			tail=n;
 			count++;
-			// std::cout<<"Added '"<<item
-			// <<"' to queue."<<std::endl;
+			//std::cout<<"Added '"<<item
+			//<<"' to queue."<<std::endl;
 			return true;
 		}
 		else return false;
@@ -87,8 +87,8 @@ public:
 			}
 			delete n;
 			count--;
-			// std::cout<<"Removed '"<<n->item
-			// <<"' from queue."<<std::endl;
+			//std::cout<<"Removed '"<<n->item
+			//<<"' from queue."<<std::endl;
 			return n->item;
 		}
 		else return -1;
@@ -101,7 +101,11 @@ public:
 
 	ItemType top()
 	{
-		return head->item;
+		if(size()>0)
+		{
+			return head->item;
+		}
+		else return -1;
 	}
 
 };

@@ -18,7 +18,11 @@ private:
 public:
 	ItemType top()
 	{
-		return tail->item;
+		if(size()>0)
+		{
+			return tail->item;
+		}
+		else return -1;
 	}
 
 	void print()
@@ -68,9 +72,8 @@ public:
 			}
 			n->next=NULL;
 			tail=n;
-			//count++;
-			// std::cout<<"Added '"<<item
-			// <<"' to stack."<<std::endl;
+			//std::cout<<"Added '"<<item
+			//<<"' to stack."<<std::endl;
 			return true;
 		}
 		else return false;
@@ -91,8 +94,8 @@ public:
 			else
 				tail->next=NULL;
 			delete n;
-			// std::cout<<"Removed '"<<item
-			// <<"' from stack"<<std::endl;
+			//std::cout<<"Removed '"<<item
+			//<<"' from stack"<<std::endl;
 			return item;
 		}
 		else return -1;

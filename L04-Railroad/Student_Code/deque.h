@@ -31,6 +31,7 @@ public:
 	}
 	int size()
 	{
+		////std::cout<<"check deque size"<<std::endl;
 		int listcount=0;
 		Node* n=head;
 		if(head==NULL)
@@ -75,8 +76,8 @@ public:
 			n->item=item;
 			head=n;
 			n->prev=NULL;
-			// std::cout<<"Added '"<<item
-			// <<"' to deque."<<std::endl;
+			//std::cout<<"Added '"<<item
+			//<<"' to deque."<<std::endl;
 			return true;
 		}
 		else return false;
@@ -100,8 +101,8 @@ public:
 			}
 			n->next=NULL;
 			tail=n;
-			// std::cout<<"Added '"<<item
-			// <<"' to deque."<<std::endl;
+			//std::cout<<"Added '"<<item
+			//<<"' to deque."<<std::endl;
 			return true;
 		}
 		else return false;
@@ -123,8 +124,8 @@ public:
 				head=n->next;
 			}
 			delete n;
-			// std::cout<<"Removed '"<<item
-			// <<"' from deque"<<std::endl;
+			//std::cout<<"Removed '"<<item
+			//<<"' from deque"<<std::endl;
 			return n->item;
 		}
 		else return -1;
@@ -145,6 +146,8 @@ public:
 			{
 				tail->next=NULL;
 			}
+			//std::cout<<"Removed '"<<item
+			//<<"' from deque"<<std::endl;
 			delete n;
 			return item;
 		}
@@ -152,10 +155,18 @@ public:
 	}
 	ItemType topLeft()
 	{
-		return head->item;
+		if(size()>0)
+		{
+			return head->item;
+		}
+		else return -1;
 	}
 	ItemType topRight()
 	{
-		return tail->item;
+		if(size()>0)
+		{
+			return tail->item;
+		}
+		else return -1;
 	}
 };

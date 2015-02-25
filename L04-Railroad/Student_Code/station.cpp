@@ -36,14 +36,15 @@ bool Station::addToStation(int car)
 }
 int Station::showCurrentCar()
 {
+	//std::cout<<"show current car"<<std::endl;
 	return currentCar;
 }
 bool Station::removeFromStation()
 {
 	if(currentCar!=-1)
 	{
-		// std::cout<<"Removed '"<<currentCar
-		// <<"' from station"<<std::endl;
+		//std::cout<<"Removed '"<<currentCar
+		//<<"' from station"<<std::endl;
 		currentCar=-1;
 		return true;
 	}
