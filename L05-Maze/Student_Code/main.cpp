@@ -2,17 +2,12 @@
 
 int main()
 {
-	Pathfinder pfinder;
-	pfinder.createRandomMaze();
-	pfinder.importMaze("Solvable1.txt");
-	//cout<<pfinder.getMaze()<<endl;
-	pfinder.getMaze();
-	//vector<string> solution=pfinder.solveMaze();
-	pfinder.solveMaze();
-	//cout<< "Solution: " <<endl;
-	// for(int i=0;i<solution.size();i++)
-	// {
-	// 	cout<<"testsolution: "<<i<<endl;
-	// 	cout<<solution[i]<<endl;
-	// }
+		Pathfinder pfinder;
+		pfinder.createRandomMaze();
+		//cout<<pfinder.getMaze()<<endl;
+		pfinder.solveMaze();
+		for (int i = 0; i < pfinder.solution.size(); ++i)
+		{
+			cout<<pfinder.solution[i]<<endl;
+		}
 }

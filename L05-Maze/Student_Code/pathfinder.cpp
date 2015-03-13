@@ -46,7 +46,7 @@ void Pathfinder::createRandomMaze()
 	//ofstream maze("randomMaze.txt");
 	// if(maze.is_open())
 	// {
-		srand(time(NULL));
+		//srand(time(NULL));
 		for(int z=0;z<5;z++)
 		{
 			for(int y=0;y<5;y++)
@@ -60,7 +60,10 @@ void Pathfinder::createRandomMaze()
 						currentMaze[x][y][z]="1";
 					}
 					else
-						currentMaze[x][y][z]=rand()%2;
+					{
+						int i=rand()%2;
+						currentMaze[x][y][z]=to_string(i);
+					}
 						//maze<<rand()%2;
 					//maze<<" ";
 				}
@@ -68,9 +71,9 @@ void Pathfinder::createRandomMaze()
 			}
 			mazeAvailable=true;
 			//maze<<endl;
-		//}
+		}
 		//maze.close();
-	}
+	//}
 }
 
 bool Pathfinder::importMaze(string file_name)
@@ -114,6 +117,7 @@ bool Pathfinder::importMaze(string file_name)
 	if(count!=125)
 	{
 		//cout<<"INVALID MAZE"<<endl;
+		//cout<<"invalid count"<<endl;
 		return false;
 	}
 	myfile.open(file_name);
@@ -132,51 +136,34 @@ bool Pathfinder::importMaze(string file_name)
 			}
 		}
 		myfile.close();
-		if(tempMaze[4][4][4]=="0"||tempMaze[0][0][0]=="0")
+	}
+	if(tempMaze[4][4][4]=="0"||tempMaze[0][0][0]=="0")
+	{
+		//cout<<"invalid entrance/exit"<<endl;
+		//mazeAvailable=false;
+		return false;
+	}
+	//cout<<"move to current maze"<<endl;
+	for(int z=0;z<5;z++)
+	{
+		for(int y=0;y<5;y++)
 		{
-			mazeAvailable=false;
-			return false;
-		}
-		else
-		{
-			for(int z=0;z<5;z++)
+			for(int x=0;x<5;x++)
 			{
-				for(int y=0;y<5;y++)
-				{
-					for(int x=0;x<5;x++)
-					{
-						currentMaze[x][y][z]=tempMaze[x][y][z];
-					}
-				}
+				currentMaze[x][y][z]=tempMaze[x][y][z];
 			}
 		}
-	}
-	// cout<<"Printing maze:"<<endl;
-	// for(int z=0;z<5;z++)
-	// {
-	// 	for(int y=0;y<5;y++)
-	// 	{
-	// 		for(int x=0;x<5;x++)
-	// 		{
-	// 			cout<<maze[x][y][z]<< " ";
-	// 		}
-	// 		cout<<endl;
-	// 	}
-	// 	cout<<endl;
-	// }
-	//cout<<"finished importing"<<endl;
-	cout<<"mazeAvailable"<<endl;
+	}	
 	mazeAvailable=true;
 	return true;
-
 }
 
 vector<string> Pathfinder::solveMaze()
 {
-	vector<string> solution;
+	solution.clear();
 	if(!mazeAvailable)
 	{
-		cout<<"no maze"<<endl;
+		//cout<<"no maze"<<endl;
 		return solution;
 	}
 	string step;
@@ -187,38 +174,20 @@ vector<string> Pathfinder::solveMaze()
 			for(int x=0;x<5;x++)
 			{
 				this->wasHere[x][y][z]=false;
-				this->correctPath[x][y][z]=false;
 			}	
 		}
 	}
 	bool b = recursiveSolve(0,0,0);
 	if(!b)
 	{
+		solution.clear();
 		return solution;
 	}
-	for(int z=0;z<5;z++)
-	{
-		for(int y=0;y<5;y++)
-		{
-			for(int x=0;x<5;x++)
-			{
-				if(correctPath[x][y][z])
-				{
-					cout<<"cpath"<<endl;
-					step="("+
-						to_string(x)+","+
-						to_string(y)+","+
-						to_string(y)+")";
-					solution.push_back(step);
-				}
-			}	
-		}
-	}
-	for(int i=0;i<solution.size();i++)
-	{
-		cout<<"solution"<<endl;
-		cout<<solution.at(i)<<endl;
-	}
+	// for(int i=0;i<solution.size();i++)
+	// {
+	// 	//cout<<"solution"<<endl;
+	// 	cout<<solution.at(i)<<endl;
+	// }
 	return solution;
 	
 }
@@ -228,7 +197,9 @@ bool Pathfinder::recursiveSolve(int x, int y, int z)
 
 	if(x==4 && y==4 && z==4) 
 	{
-		correctPath[x][y][z]=true;
+		//correctPath[x][y][z]=true;
+		string end="(4, 4, 4)";
+		solution.push_back(end);
 		return true;
 	}
 	if(x<0||x>4||y<0||y>4||z<0||z>4)
@@ -244,14 +215,23 @@ bool Pathfinder::recursiveSolve(int x, int y, int z)
 		return false;
 	}
 	wasHere[x][y][z]=true;
-	cout<<"Solving: "<<x<<","<<y<<","<<z<<endl;
+	//cout<<"Solving: "<<x<<","<<y<<","<<z<<endl;
 	if(recursiveSolve(x-1,y,z)||recursiveSolve(x+1,y,z)||
 			recursiveSolve(x,y-1,z)||recursiveSolve(x,y+1,z)||
 			recursiveSolve(x,y,z-1)||recursiveSolve(x,y,z+1))
 	{
-		cout<<"resolve"<<endl;
-		correctPath[x][y][z]=true;
+		
+		//correctPath[x][y][z]=true;
+		string step="("+
+				to_string(x)+", "+
+				to_string(y)+", "+
+				to_string(z)+")";
+		// cout<<"add correct path: ";
+		// cout << step << endl;
+		solution.insert(solution.begin(),step);
+		
 		return true;
 	}
+	//correctPath[x][y][z]=false;
 	return false;
 }
