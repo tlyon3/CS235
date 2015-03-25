@@ -19,10 +19,11 @@ public:
 	bool add(int data);
 	bool remove(int data);
 	void clear();	
-	bool addItemAt(Node* & n,int data);
+	bool addItemAt(Node* &n,int data);
 	bool removeItemAt(Node* & n, int data);
 	int size();
 	int sizeAtN(Node* n);
-	int minValueAtN(Node* n);
+	int maxValueAtN(Node* n);
 	void deleteTree(Node* n);
+	Node* findNode(Node* n,int data);
 };
