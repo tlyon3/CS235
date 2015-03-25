@@ -1,4 +1,6 @@
 #include "bst.h"
+#include "node.h"
+#include "node.cpp"
 
 Node* BST::getRootNode()
 {
@@ -7,23 +9,31 @@ Node* BST::getRootNode()
 
 bool BST::add(int data)
 {
+	// cout<<"ROOT: "<<root<<endl;
+	// cout<<"add: "<<data<<endl;
 	if(root==NULL)
 	{
-		Node* n=new Node();
+		Node* n=new Node(data);
 		root=n;
+		cout<<"ADDED "<<data<<" at ROOT: "<<root<<endl;
 		return true;
 	}
 	if(addItemAt(this->root,data))
+	{
+		cout<<"DONE"<<endl;
 		return true;
+	}
 	else return false;
 }
 
-bool addItemAt(Node* & n, int data)
+bool BST::addItemAt(Node* & n, int data)
 {
+	//cout<<"ADDITEMAT: "<<n<<", "<<data<<endl;
 	if(n->item==data)
 		return false;
 	else if(n==NULL)
 	{
+
 		Node* node = new Node();
 		n->item=data;
 		n=node;
@@ -31,11 +41,30 @@ bool addItemAt(Node* & n, int data)
 	}
 	else if(data<n->item)
 	{
-		addItemAt(n->right,data);
+		if(n->right!=NULL)
+		{
+			addItemAt(n->right,data);
+		}
+		else
+		{
+			n->right=new Node(data);
+			cout<<"ADDED "<<data<<" at "<<n->right<<endl;
+			return true;
+		}
+
 	}
 	else if (data > n->item)
 	{
-		addItemAt(n->left,data);
+		if(n->left!=NULL)
+		{
+			addItemAt(n->left,data);
+		}
+		else
+		{
+			n->left=new Node(data);
+			cout<<"ADDED "<<data<<" at "<<n->left<<endl;
+			return true;
+		}
 	}
 	else return false;
 }
@@ -107,22 +136,42 @@ int BST::sizeAtN(Node* n)
 }
 int BST::minValueAtN(Node* n)
 {
-	Node* current=n;
-	while(n!=NULL)
+	if(n==NULL)
+		return -1;
+	int value= n->getData();
+	Node* left=n->left;
+	if(left!=NULL)
 	{
-		current=current->getLeftChild();
+		int leftValue=minValueAtN(left);
+		if(leftValue<value)
+		{
+			value=leftValue;
+		}
 	}
-	return current->getData();
+	Node* right=n->right;
+	if(right!=NULL)
+	{
+		int rightValue = minValueAtN(right);
+		if(rightValue<value)
+		{
+			value=rightValue;
+		}
+	}
+	return value;
 }
 
 void BST::clear()
 {
-	Node* n;
-	int count=size();
-	while(count)
-	{
-		delete n;
-		count--;
-	}
+	deleteTree(root);
 	root=NULL;
+}
+
+void BST::deleteTree(Node* n)
+{
+	if(n==NULL)
+		return;
+	deleteTree(n->left);
+	deleteTree(n->right);
+	n=NULL;
+	free(n);
 }

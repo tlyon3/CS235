@@ -4,11 +4,20 @@
 class Node:public NodeInterface
 {
 public:
-	Node* root;
 	Node* left;
 	Node* right;
 	int item;
-	Node(){}
+	Node()
+	{
+		left=NULL;
+		right=NULL;
+	}
+	Node(int data)
+	{
+		left=NULL;
+		right=NULL;
+		item=data;
+	}
 	~Node(){}
 	int getData();
 	Node* getLeftChild();

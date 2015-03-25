@@ -1,5 +1,5 @@
 #include "Factory.h"
-#include "bst.cpp"
+#include "bst.h"
 //You may add #include statements here
 
 /*
@@ -16,5 +16,5 @@
 */
 BSTInterface * Factory::getBST()
 {
-	return new BST();;//Modify this line
+	return new BST();//Modify this line
 }

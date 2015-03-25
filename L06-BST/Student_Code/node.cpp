@@ -14,3 +14,4 @@ Node* Node::getRightChild()
 {
 	return this->right;
 }
+

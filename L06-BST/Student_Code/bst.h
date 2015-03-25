@@ -1,14 +1,20 @@
 #pragma once
 #include "BSTInterface.h"
-#include "node.cpp"
+#include "node.h"
 
 class BST: public BSTInterface
 {
 private:
 	Node* root;
 public:
-	BST(){}
-	~BST(){}
+	BST()
+	{
+		root=NULL;
+	}
+	~BST()
+	{
+		delete root;
+	}
 	Node* getRootNode();
 	bool add(int data);
 	bool remove(int data);
@@ -18,4 +24,5 @@ public:
 	int size();
 	int sizeAtN(Node* n);
 	int minValueAtN(Node* n);
+	void deleteTree(Node* n);
 };
