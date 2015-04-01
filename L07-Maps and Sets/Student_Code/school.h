@@ -20,11 +20,14 @@ public:
 		gradeMap["C"]=2.0;
 		gradeMap["C-"]=1.7;
 		gradeMap["D+"]=1.4;
-		gradeMap["d"]=1.0;
+		gradeMap["D"]=1.0;
 		gradeMap["D-"]=0.7;
 		gradeMap["E"]=0.0;
 	}
-	~School(){}
+	~School()
+	{
+		clear();
+	}
 	map<unsigned long long int,StudentInterface*> getMap();
 	set<StudentInterface*,Comparator> getSet();
 	bool importStudents(string mapFileName,string setFileName);

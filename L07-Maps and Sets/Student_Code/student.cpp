@@ -1,6 +1,7 @@
 #include "student.h"
 #include <sstream>
 #include <iostream>
+#include <iomanip>
 unsigned long long int Student::getID()
 {
 	return ID;
@@ -42,9 +43,17 @@ void Student::setName(string iname)
 
 string Student::getGPA()
 {
+	if(this->numClasses==0)
+	{
+		return "0.00";
+	}
 	double gpa=this->points/this->numClasses;
+	if(gpa==0.0)
+	{
+		return "0.00";
+	}
 	ostringstream strs;
-	strs<<gpa;
+	strs<<fixed<<setprecision(2)<<gpa;
 	string str=strs.str();
 	return str;
 }
@@ -58,16 +67,10 @@ void Student::addGPA(double classGrade)
 
 string Student::toString()
 {
-	string str;
-	str+=to_string(this->ID);
-	str+="\n";
-	str+=this->name;
-	str+="\n";
-	str+=this->address;
-	str+="\n";
-	str+=this->phone;
-	str+="\n";
-	str+=this->getGPA();
-	return str;
+	stringstream str;
+	str<<this->getID()<<endl;
+	str<<this->name<<endl<<this->address<<endl<<this->phone<<endl;
+	str<<this->getGPA();
+	return str.str();
 
 }

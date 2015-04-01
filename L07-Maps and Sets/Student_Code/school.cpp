@@ -3,6 +3,7 @@
 #include <iostream>
 #include <fstream>
 #include <vector>
+#include <sstream>
 map<unsigned long long int,StudentInterface*> School::getMap()
 {
 	return studentMap;
@@ -37,21 +38,29 @@ bool School::importStudents(string mapFileName,string setFileName)
 	{
 		if(!valid)
 			break;
-		string sid;
+		//stringstream sid;
 		string name;
 		string phone;
 		string address;
 		//cout<<"IMPORTING SET: ";
 		try
 		{
-			getline(setFile,sid);
-			if(sid.empty())
-			{
-				break;
-			}
+			// getline(setFile,sid);
+			// if(sid.empty())
+			// {
+			// 	break;
+			// }
 			//cout<<endl;
 			//cout<<sid<<endl;
-			unsigned long long int id=stoi(sid);
+			//unsigned long long int id=stoi(sid);
+			unsigned long long int id;
+			setFile>>id;
+			setFile.ignore();
+			if(setFile.fail())
+			{
+				valid=false;
+				break;
+			}
 			getline(setFile,name);
 			//cout<<name<<endl;
 			getline(setFile,address);
@@ -69,6 +78,7 @@ bool School::importStudents(string mapFileName,string setFileName)
 			valid=false;
 			break;
 		}
+		setFile.peek();
 	}
 	//cout<<"DONE!"<<endl;
 	while(!mapFile.eof())
@@ -82,12 +92,19 @@ bool School::importStudents(string mapFileName,string setFileName)
 		//cout<<"IMPORTING MAP: ";
 		try
 		{
-			getline(mapFile,sid);
-			if(sid.empty())
+			// getline(mapFile,sid);
+			// if(sid.empty())
+			// {
+			// 	break;
+			// }
+			unsigned long long int id;
+			mapFile>>id;
+			mapFile.ignore();
+			if(mapFile.fail())
 			{
+				valid=false;
 				break;
 			}
-			unsigned long long int id=stoi(sid);
 			//cout<<endl;
 			//cout<<sid<<endl;
 			getline(mapFile,name);
@@ -107,19 +124,26 @@ bool School::importStudents(string mapFileName,string setFileName)
 			valid=false;
 			break;
 		}
+		mapFile.peek();
 	}
 	if(!valid)
 	{
+		int i=0;
 		//cout<<"DELETING NEW MAP STUDENTS"<<endl;
-		for(int i=0;i<newMapStudents.size();i++)
+		for(i=0;i<newMapStudents.size();i++)
 		{
 			delete newMapStudents[i];
 		}
+		//cout<<"DELETED "<<i<<" STUDENT OBJECTS"<<endl;
 		//cout<<"DELETING NEW SET STUDENTS"<<endl;
-		for (int i = 0; i < newSetStudents.size(); ++i)
+		for (i = 0; i < newSetStudents.size(); ++i)
 		{
 			delete newSetStudents[i];
 		}
+		//cout<<"DELETED "<<i<<" STUDENT OBJECTS"<<endl;
+		newMapStudents.clear();
+		newSetStudents.clear();
+
 		return false;
 	}
 	else
@@ -203,7 +227,7 @@ bool School::importGrades(string fileName)
 string School::querySet(string fileName)
 {
 	ifstream file(fileName);
-	string str;
+	stringstream str;
 	if(file.is_open())
 	{
 		while(!file.eof())
@@ -211,67 +235,85 @@ string School::querySet(string fileName)
 			string id;
 			try
 			{
-				getline(file,id);
-				if(id.empty())
+				// getline(file,id);
+				// if(id.empty())
+				// {
+				// 	break;
+				// }
+				unsigned long long int sID;
+				file>>sID;
+				file.ignore();
+				if(file.fail())
 				{
 					break;
 				}
-				unsigned long long int sID=stoi(id);
-				str+=id;
-				str+=" ";
 				for(StudentInterface* s:studentSet)
 				{
 					if(sID==s->getID())
 					{
-						str+=s->getGPA();
-						str+=" ";
-						str+=s->getName();
-						str+="\n";
+					// {
+					// 	str+=id;
+					// 	str+=" ";
+					// 	str+=s->getGPA();
+					// 	str+=" ";
+					// 	str+=s->getName();
+					// 	str+="\n";
+						str<<s->getID()<<" "<<s->getGPA()<<" "
+						<<s->getName()<<endl;
 						break;
 					}
 				}
 			}
 			catch(...)
 			{
-				return str;
+				return str.str();
 			}
 		}
 	}
-	return str;
+	return str.str();
 
 }
 
 string School::queryMap(string fileName)
 {
 	ifstream file(fileName);
-	string str;
+	stringstream str;
 	if(file.is_open())
 	{
 		while(!file.eof())
 		{
+			//cout<<"NEXT ITERATION"<<endl;
 			string id;
 			try
 			{
-				getline(file,id);
-				if(id.empty())
+				// getline(file,id);
+				// if(id.empty())
+				// {
+				// 	break;
+				// }
+				unsigned long long int sID;
+				file>>sID;
+				//cout<<"ID: "<<sID<<endl;
+				file.ignore();
+				if(file.fail())
 				{
 					break;
 				}
-				unsigned long long int sID=stoi(id);
-				str+=id;
-				str+=" ";
-				str+=studentMap[sID]->getGPA();
-				str+=" ";
-				str+=studentMap[sID]->getName();
-				str+="\n";
+				if(studentMap.find(sID)!=studentMap.end())
+				{
+					//cout<<"ADDING: " <<sID<<endl;
+					str<<sID<<" "<<studentMap[sID]->getGPA()<<" "
+					<<studentMap[sID]->getName()<<endl;
+				}
 			}
 			catch(...)
 			{
-				return str;
+				//cout<<"FAILED FULL INPUT"<<endl;
+				return str.str();
 			}
 		}
 	}
-	return str;
+	return str.str();
 }
 
 void School::clear()

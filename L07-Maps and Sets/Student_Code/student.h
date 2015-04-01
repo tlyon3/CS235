@@ -5,16 +5,16 @@
 class Student:public StudentInterface
 {
 private:
-	int ID;
+	unsigned long long int ID;
 	string name;
 	string address;
 	string phone;
 	list<string> classes;
 	double points;
-	int numClasses;
+	double numClasses;
 public:
 	Student(){}
-	Student(int inid, string inName,
+	Student(unsigned long long int inid, string inName,
 		string inAddress, string inPhone)
 	{
 		ID=inid;
@@ -22,6 +22,7 @@ public:
 		address=inAddress;
 		phone=inPhone;
 		points=0;
+		numClasses=0;
 	}
 	void addClass(string newClass);
 	~Student(){}
