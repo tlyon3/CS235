@@ -16,12 +16,6 @@ set<StudentInterface*,Comparator> School::getSet()
 
 bool School::importStudents(string mapFileName,string setFileName)
 {
-/*
-	getline(in,name);
-	s=new Student(...);
-	set.insert(s);
-	map[ID]=s;
-*/
 	bool valid=true;
 	vector<Student*> newSetStudents;
 	vector<Student*> newMapStudents;
@@ -38,21 +32,11 @@ bool School::importStudents(string mapFileName,string setFileName)
 	{
 		if(!valid)
 			break;
-		//stringstream sid;
 		string name;
 		string phone;
 		string address;
-		//cout<<"IMPORTING SET: ";
 		try
 		{
-			// getline(setFile,sid);
-			// if(sid.empty())
-			// {
-			// 	break;
-			// }
-			//cout<<endl;
-			//cout<<sid<<endl;
-			//unsigned long long int id=stoi(sid);
 			unsigned long long int id;
 			setFile>>id;
 			setFile.ignore();
@@ -85,18 +69,12 @@ bool School::importStudents(string mapFileName,string setFileName)
 	{
 		if(!valid)
 			break;
-		string sid;
 		string name;
 		string phone;
 		string address;
 		//cout<<"IMPORTING MAP: ";
 		try
 		{
-			// getline(mapFile,sid);
-			// if(sid.empty())
-			// {
-			// 	break;
-			// }
 			unsigned long long int id;
 			mapFile>>id;
 			mapFile.ignore();
@@ -164,15 +142,6 @@ bool School::importStudents(string mapFileName,string setFileName)
 
 bool School::importGrades(string fileName)
 {
-/*
-	map<ID,SI*>
-	map[ID]->addGPA();
-	--------------
-	for(SI* s:set)	//for each student in set of students
-	{
-		
-	}
-*/
 	ifstream file(fileName);
 	if(!file.is_open())
 	{
@@ -211,7 +180,6 @@ bool School::importGrades(string fileName)
 				if (id==s->getID())
 				{
 					//cout<<"found id"<<id<<endl;
-					//s->addClass(newClass);
 					s->addGPA(gradeMap[grade]);
 				}
 			}
@@ -232,14 +200,8 @@ string School::querySet(string fileName)
 	{
 		while(!file.eof())
 		{
-			string id;
 			try
 			{
-				// getline(file,id);
-				// if(id.empty())
-				// {
-				// 	break;
-				// }
 				unsigned long long int sID;
 				file>>sID;
 				file.ignore();
@@ -251,13 +213,6 @@ string School::querySet(string fileName)
 				{
 					if(sID==s->getID())
 					{
-					// {
-					// 	str+=id;
-					// 	str+=" ";
-					// 	str+=s->getGPA();
-					// 	str+=" ";
-					// 	str+=s->getName();
-					// 	str+="\n";
 						str<<s->getID()<<" "<<s->getGPA()<<" "
 						<<s->getName()<<endl;
 						break;
@@ -283,14 +238,9 @@ string School::queryMap(string fileName)
 		while(!file.eof())
 		{
 			//cout<<"NEXT ITERATION"<<endl;
-			string id;
 			try
 			{
-				// getline(file,id);
-				// if(id.empty())
-				// {
-				// 	break;
-				// }
+			
 				unsigned long long int sID;
 				file>>sID;
 				//cout<<"ID: "<<sID<<endl;

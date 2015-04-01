@@ -60,7 +60,7 @@ string Student::getGPA()
 
 void Student::addGPA(double classGrade)
 {
-	//std::cout<<"adding gpa"<<endl;
+	
 	this->points+=classGrade;
 	this->numClasses++;
 }
