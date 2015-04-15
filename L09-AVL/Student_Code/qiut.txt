@@ -1,0 +1,382 @@
+#include "avl.h"
+#include <iostream>
+#include <stack>
+Node* AVL::getRootNode()
+{
+	return root;
+}
+
+int AVL::getHeight(Node* n) {
+    if(!n)
+        return 0;
+ 
+    return(1 + max(getHeight(n->left), getHeight(n->right)));
+}
+
+bool AVL::isBalanced(Node* n) {
+    if(!n)
+        return false;
+ 
+    int lH = getHeight(n->left);
+    int rH = getHeight(n->right);
+ 
+    if((lH - rH) <= -2 || (lH - rH) >= 2)
+        return false;
+    else
+        return true;
+}
+
+bool AVL::add(int newData)
+{
+	if(!root)
+	{
+		root = new Node(newData);
+		if(!root)
+			return false;
+	}
+	else
+	{
+		Node* t=root;
+		while(t)
+		{
+			if(newData < t->data)
+			{
+				if(!t->left)
+				{
+					t->left=new Node(newData);
+					if(!t->left)
+						return false;
+					t->left->data = newData;
+					t->left->right=NULL;
+					t->left->left=NULL;
+					t = t->left;
+					break;
+				}
+				else
+					t=t->left;
+			}	
+			else if(newData > t->data)
+			{
+				if(!t->right)
+				{
+					t->right=new Node(newData);
+					if(!t->right)
+					{
+						return false;
+					}
+					t->right->left=NULL;
+					t->right->right=NULL;
+					t=t->right;
+					break;
+				}
+				else
+					t=t->right;
+			}
+			else
+				return true;	
+		}
+		Node* n=root;
+		stack<Node*> stk;
+
+		do
+		{
+			while(n)     //check for imbalances and balance
+			{
+				stk.push(n);
+				n=n->left;
+			}
+			if(!stk.empty())
+			{
+				Node* p =stk.top();
+				stk.pop();
+				if(!isBalanced(p))
+				{
+					Node* pp=NULL;
+					if(!stk.empty())
+						pp=stk.top();
+					bool retVal=rotate(pp,p,t);
+					break;
+				}
+				n=p->right;
+			}
+		}while(!stk.empty()||!n);
+	}
+}
+
+bool AVL::remove(int data)
+{
+    if(root==NULL)
+    {
+        return false;
+    }
+    if(root->data==data&&root->right==NULL&&root->left==NULL)
+    {
+        Node* temp=root;
+        root=NULL;
+        delete temp;
+        return true;
+    }
+    if(removeItemAt(root,data,NULL))
+    {
+        return true;
+    }
+    else return false;
+}
+
+bool AVL::removeItemAt(Node*& n,int data,Node* t)
+{
+    if(n==NULL)
+    {
+        //cout<<"empty tree"<<endl;
+        return false;
+    }
+   
+    if(data==n->data)
+    {
+        if(n->left==NULL&&n->right!=NULL)
+        {
+            //cout<<"single right child"<<endl;
+            Node* temp=n;
+            n=n->right;
+            delete temp;
+            balanceAfter(t);
+            return true;
+        }
+        else if(n->right==NULL&&n->left!=NULL)
+        {
+            //cout<<"single left child"<<endl;
+            Node* temp=n;
+            n=n->left;
+            delete temp;
+            balanceAfter(t);
+            return true;
+        }
+        else if(n->right==NULL&&n->left==NULL)
+        {
+            Node* temp=n;
+            n=NULL;
+            delete temp;
+            balanceAfter(t);
+            return true;
+
+        }
+        else
+        {
+            n->data=maxValueAtN(n->left);//*max value in left*
+            removeItemAt(n->left,n->data,n);
+        }
+    }
+    else if(data < n->data)
+    {
+        removeItemAt(n->left,data,n);
+    }
+    else 
+        removeItemAt(n->right,data,n);
+}
+
+bool AVL::rotate(Node* pp, Node* p, Node* n) {
+ 
+    try {
+ 
+        if(p->data < n->data) {
+            Node* c = p->right;
+            if(c->data < n->data) {
+                return singleRotateLeft(pp, p, c);
+            } else if(c->data > n->data) {
+                return doubleRotateLeft(pp, p, c, n);
+            }
+        } else if (p->data > n->data) {
+            Node* c = p->left;
+            if(c->data < n->data) {
+                return doubleRotateRight(pp, p, c, n);
+            } else if(c->data > n->data) {
+                return singleRotateRight(pp, p, c);
+            }
+        }
+    } catch (exception const & ex) {
+        return false;
+    }
+}
+bool AVL::singleRotateRight(Node* pp, Node* p, Node* c) {
+    try {
+        Node* cr = c->right;
+ 
+        if(!pp) {
+            root = c;
+        } else {
+            if(c->data < pp->data)
+                pp->left = c;
+            else
+                pp->right = c;
+        }
+     
+        c->right = p;
+        p->left = cr;
+ 
+        return true;
+    } catch (exception const & ex) {
+        return false;   
+    }
+}
+ 
+ 
+bool AVL::doubleRotateRight(Node* pp, Node* p, Node* c, Node* n) {
+    try {
+        Node* nl = n->left;
+        Node* nr = n->right;
+ 
+        if(!pp) {
+            root = n;
+        } else {
+            if(n->data < pp->data)
+                pp->left = n;
+            else
+                pp->right = n;
+        }
+ 
+        n->right = p;
+        n->left = c;
+        p->left = nl;
+        c->right = nr;
+     
+        return true;
+    } catch (exception const & ex ) {
+        return false;
+    }
+}
+ 
+bool AVL::singleRotateLeft(Node* pp, Node* p, Node* c) {
+    try {
+        Node* cl = c->left;
+ 
+        if(!pp) {
+            root = c;
+        } else {
+            if(c->data < pp->data)
+                pp->left = c;
+            else
+                pp->right = c;
+        }
+         
+        c->left = p;
+        p->right = cl;
+         
+        return true;
+    } catch (exception const & ex) {
+        return false;
+    }
+}
+ 
+bool AVL::doubleRotateLeft(Node* pp, Node* p, Node* c, Node* n) {
+    try {
+        Node* nr = n->right;     
+        Node* nl = n->left; 
+ 
+        if(!pp) {
+            root = n;
+        } else {
+            if(n->data < pp->data)
+                pp->left = n;
+            else
+                pp->right = n;
+        }
+     
+        n->left = p;
+        p->right = nl;
+        n->right = n;
+        c->left = nr;
+ 
+        return true;
+    } catch (exception const & ex) {
+       
+        return false;
+    }
+}
+
+void AVL::updateTreeBal(Node* n) {
+    if(!n)
+        return;
+     
+    updateTreeBal(n->left);
+    //setBalance(n);
+    updateTreeBal(n->right);
+}
+Node* AVL::findNode(Node* n,int data)
+{
+    if(n==NULL)
+    {
+        return NULL;
+    }
+    else if(n->data==data)
+    {
+        return n;
+    }
+    else if(data<n->data)
+    {
+        findNode(n->left,data);
+    }
+    else if (data>n->data)
+    {
+        findNode(n->right,data);
+    }
+    else return NULL;
+}
+int AVL::maxValueAtN(Node* n)
+{
+    if(n==NULL)
+        return -1;
+    int value= n->getData();
+    Node* left=n->left;
+    if(left!=NULL)
+    {
+        int leftValue=maxValueAtN(left);
+        if(leftValue>value)
+        {
+            value=leftValue;
+        }
+    }
+    Node* right=n->right;
+    if(right!=NULL)
+    {
+        int rightValue = maxValueAtN(right);
+        if(rightValue>value)
+        {
+            value=rightValue;
+        }
+    }
+    return value;
+}
+
+void AVL::balanceAfter(Node* t)
+{
+    Node* n=root;
+    stack<Node*> stk;
+    do
+    {
+        while(n)     //check for imbalances and balance
+        {
+            stk.push(n);
+            n=n->left;
+        }
+        if(!stk.empty())
+        {
+            Node* p =stk.top();
+            stk.pop();
+            if(!isBalanced(p))
+            {
+                Node* pp=NULL;
+                if(!stk.empty())
+                    pp=stk.top();
+                bool retVal=rotate(pp,p,t);
+                break;
+            }
+            n=p->right;
+        }
+    }while(!stk.empty()||!n);
+}
+// int AVL::setBalance(Node* n)
+// {
+// 	if(!n)
+// 		return 0;
+// 	return(1+max(getHeight(n->left),getHeight(n->right)));
+// }

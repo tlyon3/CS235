@@ -1,0 +1,205 @@
+#include "avl.h"
+#include <iostream>
+Node* AVL::getRootNode()
+{
+	return root;
+}
+
+bool AVL::add(int data)
+{
+	cout<<"ADDING: " <<data<<endl;
+	if(root=insert(root,data))
+		return true;
+	else return false;
+}
+int max(int a, int b)
+{
+	return (a>b)? a : b;
+}
+
+Node* AVL::insert(Node* n,int data)
+{
+	cout<<"INSERT"<<endl;
+	if(n==NULL)
+	{
+		cout<<"N=NULL"<<endl;
+		return new Node(data);
+	}
+	if(data<n->data)
+	{
+		cout<<"DATA<N->DATA"<<endl;
+		n->left=insert(n->left,data);
+	}
+	else 
+	{
+		cout<<"GREATER THAN"<<endl;
+		n->right=insert(n->right,data);
+	}
+	n->height=max(n->left->height,
+		n->right->height)+1;
+	int balance = getBalance(n);
+	if(balance > 1 && data < n->left->data)
+	{
+		return rotateRight(n);
+	}
+	if(balance < -1 && data > n->right->data)
+		return rotateLeft(n);
+	if(balance > 1 && data > n->left->data)
+	{
+		n->left = rotateLeft(n->left);
+		return rotateRight(n);
+	}
+	if(balance < -1 && data < n->right->data)
+	{
+		n->right = rotateRight(n->right);
+		return rotateLeft(n);
+	}
+	return n;
+}
+bool AVL::remove(int data)
+{
+	if(removeItemAt(root,data))
+		return true;
+	else return false;
+}
+
+bool AVL::removeItemAt(Node*& n, int data)
+{
+	if(n==NULL)
+	{
+		//cout<<"empty tree"<<endl;
+		return false;
+	}
+	if(data==n->data)
+	{
+		if(n->left==NULL&&n->right!=NULL)
+		{
+			//cout<<"single right child"<<endl;
+			Node* temp=n;
+			n=n->right;
+			delete temp;
+			return true;
+		}
+		else if(n->right==NULL&&n->left!=NULL)
+		{
+			//cout<<"single left child"<<endl;
+			Node* temp=n;
+			n=n->left;
+			delete temp;
+			return true;
+		}
+		else if(n->right==NULL&&n->left==NULL)
+		{
+			Node* temp=n;
+			n=NULL;
+			delete temp;
+			return true;
+
+		}
+		else
+		{
+			n->data=maxValueAtN(n->left);//*max value in left*
+			removeItemAt(n->left,n->data);
+		}
+	}
+	else if(data < n->data)
+	{
+		removeItemAt(n->left,data);
+	}
+	else 
+		removeItemAt(n->right,data);
+}
+
+Node* AVL::findNode(Node* n,int data)
+{
+	if(n==NULL)
+	{
+		return NULL;
+	}
+	else if(n->data==data)
+	{
+		return n;
+	}
+	else if(data<n->data)
+	{
+		findNode(n->left,data);
+	}
+	else if (data>n->data)
+	{
+		findNode(n->right,data);
+	}
+	else return NULL;
+}
+
+int AVL::maxValueAtN(Node* n)
+{
+	if(n==NULL)
+		return -1;
+	int value= n->getData();
+	Node* left=n->left;
+	if(left!=NULL)
+	{
+		int leftValue=maxValueAtN(left);
+		if(leftValue>value)
+		{
+			value=leftValue;
+		}
+	}
+	Node* right=n->right;
+	if(right!=NULL)
+	{
+		int rightValue = maxValueAtN(right);
+		if(rightValue>value)
+		{
+			value=rightValue;
+		}
+	}
+	return value;
+}
+
+Node* AVL::rotateRight(Node* n)
+{
+	cout<<"ROTATE RIGHT"<<endl;
+	Node* x=n->left;
+	Node* q=x->right;
+	x->right=n;
+	n->left=q;
+	n->height=max(n->left->getHeight(),
+		n->right->getHeight())+1;
+	x->height=max(x->left->getHeight(),x->right->getHeight())+1;
+}
+
+Node* AVL::rotateLeft(Node* n)
+{
+	cout<<"ROTATE LEFT"<<endl;
+	Node* y=n->right;
+	Node* q=y->left;
+	y->left=n;
+	n->right=q;
+	n->height=max(n->left->getHeight(),
+		n->right->getHeight())+1;
+	y->height=max(y->left->getHeight(),
+		y->right->getHeight())+1;
+	return y;
+}
+
+int AVL::getBalance(Node* n)
+{
+	if(n==NULL)
+		return 0;
+	return (n->left->getHeight()-n->right->getHeight());
+}
+
+void AVL::preOrder()
+{
+	preOrderAt(root);
+}
+void AVL::preOrderAt(Node* n)
+{
+	if(n!=NULL)
+	{
+		cout<<n->data<<" ";
+		preOrderAt(n->left);
+		preOrderAt(n->right);
+	}
+}
