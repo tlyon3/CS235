@@ -1,5 +1,6 @@
 #include "avl.h"
 #include <iostream>
+#include <stack>
 
 #include "AVL.h"
 #include "node.h"
@@ -14,53 +15,112 @@ bool AVL::add(int data)
 {
 	// cout<<"ROOT: "<<root<<endl;
 	// cout<<"add: "<<data<<endl;
+	while(!ancestors.empty())
+	{
+		ancestors.pop();
+	}
 	if(root==NULL)
 	{
+		cout<<"ADDED: "<<data<<" AT ROOT"<<endl;
 		Node* n=new Node(data);
 		root=n;
-		n->parent=NULL;
 		//cout<<"ADDED "<<data<<" at ROOT: "<<root<<endl;
 		return true;
 	}
-	else if(addItemAt(this->root,data,NULL))
+	else if(addItemAt(this->root,data))
 	{
 		//cout<<"DONE"<<endl;
 		return true;
 	}
 	else return false;
+	// stack<Node*> ancestors;
+	// Node* n=root;
+	// while(n!=NULL)
+	// {
+	// 	if(n->data==data)
+	// 	{
+	// 		return false;
+	// 	}
+	// 	else if(data < n->data)
+	// 	{
+	// 		if(n->left!=NULL)
+	// 		{
+	// 			Node* newnode=new Node();
+	// 			newnode->data=data;
+	// 			n->left=newnode;
+	// 			break;
+	// 		}
+	// 		else
+	// 		{
+	// 			if(n->right!=NULL)
+	// 			{
+	// 				Node* newNode=new Node();
+	// 				newNode->data=data;
+	// 				n->right=newNode;
+	// 				break;
+	// 			}
+	// 			ancestors.push(n);
+	// 			n=n->left;
+	// 		}
+	// 	}
+	// 	else
+	// 	{
+
+	// 		ancestors.push(n);
+	// 		n=n->right;
+	// 	}
+	// }
+	
+	
 }
 
-bool AVL::addItemAt(Node*& n, int data,Node* parent)
+bool AVL::addItemAt(Node*& n, int data)
 {
 	if(n==NULL)
 	{
+		
 		Node* node=new Node();
 		n=node;
+		cout<<"ADDED: "<<data<<" at "<<n<<endl;
 		n->right=NULL;
 		n->left=NULL;
-		n->parent=parent;
+		//n->parent=parent;
 		n->data=data;
-		balance(parent);
+		while(!ancestors.empty())
+		{
+			Node* c=ancestors.top();
+			ancestors.pop();
+			if(!ancestors.empty())
+			{
+				Node* p=ancestors.top();
+				balance(n,p);
+			}
+		}
+		//balance(parent);
 		return true;
 	}
 	else if(data < n->data)
 	{
-		addItemAt(n->left,data,n);
+		ancestors.push(n);
+		addItemAt(n->left,data);
 	}
 	else if(data > n->data)
-		addItemAt(n->right,data,n);
+	{
+		ancestors.push(n);
+		addItemAt(n->right,data);
+	}
 	else
 		return false;
 
 }
 bool AVL::remove(int data)
 {
-	if(removeItemAt(root,data,NULL))
+	if(removeItemAt(root,data))
 		return true;
 	else return false;
 }
 
-bool AVL::removeItemAt(Node*& n,int data,Node* parent)
+bool AVL::removeItemAt(Node*& n,int data)
 {
 	if(n==NULL)
 	{
@@ -96,15 +156,15 @@ bool AVL::removeItemAt(Node*& n,int data,Node* parent)
 		else
 		{
 			n->data=maxValueAtN(n->left);//*max value in left*
-			removeItemAt(n->left,n->data,n);
+			removeItemAt(n->left,n->data);
 		}
 	}
 	else if(data < n->data)
 	{
-		removeItemAt(n->left,data,n);
+		removeItemAt(n->left,data);
 	}
 	else 
-		removeItemAt(n->right,data,n);
+		removeItemAt(n->right,data);
 }
 
 
@@ -114,19 +174,16 @@ Node* AVL::findNode(Node* n,int data)
 	{
 		return NULL;
 	}
-	else if(n->data==data)
+	if(n->data==data)
 	{
 		return n;
 	}
-	else if(data<n->data)
+	else if(data < n->data)
 	{
-		findNode(n->left,data);
+		return findNode(n->left,data);
 	}
-	else if (data>n->data)
-	{
-		findNode(n->right,data);
-	}
-	else return NULL;
+	else
+		return findNode(n->right,data);
 }
 
 int AVL::size()
@@ -196,74 +253,52 @@ Node* AVL::rotateRight(Node* c)
 {
 	cout<<"ROTATE RIGHT"<<endl;
 	Node* b=c->left;
-	if(c->right!=NULL)
-		b->left=c->right;
-	else b->left=NULL;
-	b->right=c;
-	if(b->left!=NULL)
-		b->left->parent=b;
 	if(b->right!=NULL)
-		b->right->parent=b;
-	if(c->parent!=NULL)
-		b->parent=c->parent;
-	else 
-	{
-		b->parent=NULL;
-		root=b;
-	}
-	c->parent=b;
+		c->left=b->right;
+	else
+		c->left=NULL;
+	b->right=c;
 	return b;
 }
-Node* AVL::rotateLeft(Node* n)
+Node* AVL::rotateLeft(Node* a)
 {
 	cout<<"ROTATE LEFT"<<endl;
-	Node* q=n->right;
-	if(q->left!=NULL)
-		n->right=q->left;
-	else n->right=NULL;
-	q->left=n;
-	if(q->left!=NULL)
-		q->left->parent=q;
-	if(q->right!=NULL)
-		q->right->parent=q;
-	if(n->parent!=NULL)
-		q->parent=n->parent;
+	Node* b=a->right;
+	if(b->left!=NULL)
+		a->right=b->left;
 	else
-	{
-		q->parent=NULL;
-		root=q;
-	}
-	n->parent=q;
-	return q;
+		a->right=NULL;
+	b->left=a;
+	return b;
 }
-void AVL::balance(Node* n)
+void AVL::balance(Node* n,Node* p)
 {
 	if(balanceFactor(n)==2)//left
 	{
 		if(balanceFactor(n->left)==1)//left left
 		{
-			rotateRight(n);
+			p=rotateRight(n);
 		}
 		else//left right
 		{
-			rotateLeft(n->left);
-			rotateRight(n);
+			n=rotateLeft(n->left);
+			p=rotateRight(n);
 		}
 	}
 	else if(balanceFactor(n)==-2)
 	{
 		if(balanceFactor(n->right)==-1)//right right
 		{
-			rotateLeft(n);
+			p=rotateLeft(n);
 		}
 		else//right left
 		{
-			rotateLeft(n->right);
-			rotateRight(n);
+			n=rotateLeft(n->right);
+			p=rotateRight(n);
 		}
 	}
 	else if(n->parent!=NULL)
-		balance(n->parent);
+		return;
 	else return;
 }
 int AVL::balanceFactor(Node* n)

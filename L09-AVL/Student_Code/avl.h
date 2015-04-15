@@ -1,6 +1,7 @@
 #pragma once
 #include "AVLInterface.h"
 #include "node.h"
+#include <stack>
 
 class AVL : public AVLInterface
 {
@@ -26,11 +27,12 @@ public:
     // int maxValueAtN(Node*);
     // void balanceAfter(Node*);
     Node* getRootNode();
+    stack<Node*> ancestors;
     bool add(int data);
     bool remove(int data);
     void clear();   
-    bool addItemAt(Node* &n,int data,Node*);
-    bool removeItemAt(Node* & n, int data,Node*);
+    bool addItemAt(Node* &n,int data);
+    bool removeItemAt(Node* & n, int data);
     int size();
     int sizeAtN(Node* n);
     int maxValueAtN(Node* n);
@@ -39,6 +41,6 @@ public:
     Node* rotateRight(Node*);
     Node* rotateLeft(Node*);
     int height(Node*);
-    void balance(Node*);
+    void balance(Node*,Node*);
     int balanceFactor(Node*);
 };

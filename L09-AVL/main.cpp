@@ -14,5 +14,6 @@ int main()
 	myavl.add(2);
 	Node* temp1=myavl.findNode(myavl.getRootNode(),2);
 	cout<<temp1->nodeInfo()<<endl;
+	myavl.add(3);
 	
 }
