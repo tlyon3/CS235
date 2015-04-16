@@ -273,15 +273,18 @@ Node* AVL::rotateLeft(Node* a)
 }
 void AVL::balance(Node* n,Node* p)
 {
+	cout<<"BALANCING"<<endl;
 	if(balanceFactor(n)==2)//left
 	{
+		cout<<"-----LEFT"<<endl;
 		if(balanceFactor(n->left)==1)//left left
 		{
+			cout<<"------LEFT LEFT"<<endl;
 			p=rotateRight(n);
 		}
 		else//left right
 		{
-			n=rotateLeft(n->left);
+			rotateLeft(n->left);
 			p=rotateRight(n);
 		}
 	}
@@ -293,7 +296,7 @@ void AVL::balance(Node* n,Node* p)
 		}
 		else//right left
 		{
-			n=rotateLeft(n->right);
+			rotateLeft(n->right);
 			p=rotateRight(n);
 		}
 	}
