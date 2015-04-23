@@ -56,12 +56,7 @@ string Node::nodeInfo()
 	}
 	else 
 		str<<"	right: NULL"<<endl;
-	if(parent!=NULL)
-	{
-		str<<"	parent: "<<parent->data<<"|"<<parent<<endl;
-	}
-	else
-		str<<"	parent: NULL"<<endl;
+	
 	return str.str();
 
 }

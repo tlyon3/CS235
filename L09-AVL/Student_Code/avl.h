@@ -43,4 +43,8 @@ public:
     int height(Node*);
     void balance(Node*,Node*);
     int balanceFactor(Node*);
+    Node* getParent(Node*,int);
+    //void deletionBalance(Node*);
+
+
 };
